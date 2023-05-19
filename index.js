@@ -40,19 +40,49 @@ async function run() {
         res.send(result);
     })
 
-    app.get('/toys/:id', async(req,res)=>{
-        const id =req.params.id;
-        const query ={_id: new ObjectId(id)};
+    app.get('/toys/:id', async (req, res) => {
+      const id = req.params.id;
     
+      try {
+        const query = { _id: new ObjectId(id) };
         const options = {
-          
-            projection: {  description:1, name: 1,sellerEmail:1 ,sellerName:1,pictureUrl:1,quantityAvailable:1,rating:1},
-          };
+          projection: { description: 1, name: 1, sellerEmail: 1, sellerName: 1, pictureUrl: 1, quantityAvailable: 1, rating: 1, price: 1 },
+        };
     
-    
-        const result = await toyCollection.findOne(query,options)
+        const result = await toyCollection.findOne(query, options);
         res.send(result);
-    })
+      } catch (error) {
+        console.error('Error retrieving toy:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
+
+
+     // Create a new toy
+     app.post('/toys', async (req, res) => {
+      const toyData = req.body;
+      try {
+        const result = await toyCollection.insertOne(toyData);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error('Error creating toy:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
+
+
+    app.get("/toysMail/:email", async (req, res) => {
+      console.log(req.params.email);
+      const toys = await toyCollection
+        .find({
+          sellerEmail: req.params.email,
+        })
+        .toArray();
+      res.send(toys);
+    });
+
+
+    
 
 
 
