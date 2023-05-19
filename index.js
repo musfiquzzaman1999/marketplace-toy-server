@@ -61,22 +61,21 @@ async function run() {
      // Create a new toy
      app.post('/toys', async (req, res) => {
       const toyData = req.body;
-      try {
+     
         const result = await toyCollection.insertOne(toyData);
-        res.status(201).send(result);
-      } catch (error) {
-        console.error('Error creating toy:', error);
-        res.status(500).send('Internal Server Error');
-      }
+        res.send(result);
+      
     });
 
 
     app.get("/toysMail/:email", async (req, res) => {
       console.log(req.params.email);
+      const { sort } = req.query;
+  const sortOptions = { price: sort === 'asc' ? 1 : -1 };
       const toys = await toyCollection
         .find({
           sellerEmail: req.params.email,
-        })
+        }).sort(sortOptions)
         .toArray();
       res.send(toys);
     });
