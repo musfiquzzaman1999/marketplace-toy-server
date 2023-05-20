@@ -25,7 +25,15 @@ client.connect().then(() => {
   const toyCollection = client.db('toyMarketPlace').collection('toys');
 
   app.get('/toys', (req, res) => {
-    const cursor = toyCollection.find();
+    const cursor = toyCollection.find().limit(20); // Apply limit to the query
+    cursor.toArray().then((result) => {
+      res.send(result);
+    });
+  });
+  
+  app.get('/toys/:limit', (req, res) => {
+    const limit = parseInt(req.params.limit);
+    const cursor = toyCollection.find().limit(limit); // Apply the specified limit to the query
     cursor.toArray().then((result) => {
       res.send(result);
     });
