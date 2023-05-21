@@ -25,6 +25,12 @@ client.connect().then(() => {
   const toyCollection = client.db('toyMarketPlace').collection('toys');
 
   app.get('/toys', (req, res) => {
+    const cursor = toyCollection.find().limit(20);
+    cursor.toArray().then((result) => {
+      res.send(result);
+    });
+  });
+  app.get('/toyslimit', (req, res) => {
     const cursor = toyCollection.find();
     cursor.toArray().then((result) => {
       res.send(result);
@@ -64,6 +70,8 @@ client.connect().then(() => {
       res.send(result);
     });
   });
+
+  
 
   app.get('/toysMail/:email', (req, res) => {
     const email = req.params.email;
